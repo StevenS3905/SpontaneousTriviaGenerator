@@ -3,8 +3,8 @@
 Stores the categories from which questions will be asked for each server in the following format: 
 {
   "data" : "categories",
-  "server id" : ['list of category numbers'],
-  "server id" : ['list of category numbers'],
-  "server id" : ['list of category numbers']
+  "server id" : ["list of category numbers"],
+  "server id" : ["list of category numbers"],
+  "server id" : ["list of category numbers"]
 }
 */
