@@ -17,13 +17,13 @@ client = commands.Bot(command_prefix = get_prefix, help_command = None)
 async def help(context):
   embed=discord.Embed(title="**Command Summary**", description=None, color=discord.Colour.orange())
   embed.add_field(name="**ping**", value="Returns bot latency", inline=False)
-  embed.add_field(name="**changeprefix (new prefix)**", value="Changes prefix to argument", inline=False)
+  embed.add_field(name="**changeprefix (prefix)**", value="Changes prefix to argument", inline=False)
   embed.add_field(name="**freq**" , value="Returns chance of sending a question on each non-command message", inline=False)
-  embed.add_field(name="**changefreq (new frequency)**", value="Changes frequeny to argument", inline=False)
+  embed.add_field(name="**changefreq (frequency)**", value="Changes frequeny to argument", inline=False)
   embed.add_field(name="**testconnect**", value="Attempts to connect to trivia site and returns result", inline=False)
-  embed.add_field(name="**category (category)**", value="Returns of which categories trivia questions will be", inline=False)
-  embed.add_field(name="**changecategory (category)**", value="Limits trivia questions to the following category or categories. Category options are: arts & lit, geography, entertainment, history, science & nature, misc, or all", inline=False)
-  embed.add_field(name="**question (category)**", value="Returns a trivia question. Category can be of any of the above listed or blank for random", inline=False)
+  embed.add_field(name="**category**", value="Returns of which categories trivia questions will be", inline=False)
+  embed.add_field(name="**changecategory (category/categories)**", value="Limits trivia questions to the following category or categories. Category options are: arts & lit, geography, entertainment, history, science & nature, misc, or all", inline=False)
+  embed.add_field(name="**question (category/categories)**", value="Returns a trivia question. Category or categories can be of any of the above listed or blank for random", inline=False)
   embed.add_field(name="**ans (answer)**", value="Answers previous question with argument", inline=False)
   embed.add_field(name="**rightanswer**", value="Returns the correct answer to the previous question", inline=False)
   embed.add_field(name="**myscore**", value="Returns author's score", inline=False)
@@ -379,8 +379,6 @@ async def serverscores(context):
 
   l=collections.deque([servers[str(context.guild.id)][0]], maxlen=10)
   for i in servers[str(context.guild.id)][1:]:
-    print(l)
-    print(i)
     n=0
     for j in l:
       if users[i] < users[j]:
