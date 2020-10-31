@@ -1,0 +1,9 @@
+/*
+Stores the frequencies at which questions are asked for each server in the following format:
+{
+  "data" : "frequencies",
+  "server id" : "frequency",
+  "server id" : "frequency",
+  "server id" : "frequency"
+}
+*/
