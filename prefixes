@@ -1,0 +1,9 @@
+/*
+Stores the each server's bot prefix in the following format:
+{
+  "data" : "prefixes",
+  "server id" : "prefix",
+  "server id" : "prefix",
+  "server id" : "prefix"
+}
+*/
