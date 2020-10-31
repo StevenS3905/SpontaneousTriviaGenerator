@@ -509,4 +509,4 @@ async def on_message(message):
   await client.process_commands(message)
 
 keep_alive.keep_alive()
-client.run('Njk3MjQyNTIzMzI3OTIyMTg2.Xo0bsw.5nqW50snOya_z3NVLBGXpKRbBjs')
+client.run('''token''')
