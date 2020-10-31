@@ -1,0 +1,9 @@
+/*
+Stores the servers and each of their members in the following format: 
+{
+  "data" : "servers",
+  "server id" : ["list of server members"],
+  "server id" : ["list of server members"],
+  "server id" : ["list of server members"]
+}
+*/
