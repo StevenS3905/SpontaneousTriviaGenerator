@@ -1,8 +1,4 @@
-/*
-Stores the answers for each server in a dictionary with the following format
-{
-server id : "answer"
-server id2 : "answer2"
-server id3 : "answer3"
-}
-*/
+First Header | Second Header
+------------ | -------------
+Content from cell 1 | Content from cell 2
+Content in the first column | Content in the second column
