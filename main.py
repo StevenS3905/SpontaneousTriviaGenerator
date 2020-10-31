@@ -473,38 +473,39 @@ async def on_message(message):
   with open('prefixes.json', 'r') as f:
     prefixes = json.load(f)
 
-  prefix = prefixes[str(context.guild.id)]
-      
-  with open('frequencies.json', 'r') as f:
-    frequencies = json.load(f)
+  if context.guild.id in prefixes.keys():
+    prefix = prefixes[str(context.guild.id)]
+        
+    with open('frequencies.json', 'r') as f:
+      frequencies = json.load(f)
 
-  freq = frequencies[str(context.guild.id)]
+    freq = frequencies[str(context.guild.id)]
 
-  if random.random() < float(freq) and str(message.content).startswith(prefix) == False and message.author != client.user:
-    try:
-      page = urlopen(url)
-    except:
-      print("Error opening the URL")
+    if random.random() < float(freq) and str(message.content).startswith(prefix) == False and message.author != client.user:
+      try:
+        page = urlopen(url)
+      except:
+        print("Error opening the URL")
 
-    soup = BeautifulSoup(page, 'html.parser')
-            
-    with open('categories.json', 'r') as f:
-      categories = json.load(f)
+      soup = BeautifulSoup(page, 'html.parser')
+              
+      with open('categories.json', 'r') as f:
+        categories = json.load(f)
 
-    n=random.choice(categories[str(context.guild.id)])
-    string = str(soup.findAll('td')[n])
-    string = string[string.index('>', 17)+1:-9]
-    embed=discord.Embed(title="**Question**", description=string, color=discord.Colour.orange())
-    await context.send(embed=embed)
-    anser = str(soup.findAll('td')[n+1])[17:-5]
+      n=random.choice(categories[str(context.guild.id)])
+      string = str(soup.findAll('td')[n])
+      string = string[string.index('>', 17)+1:-9]
+      embed=discord.Embed(title="**Question**", description=string, color=discord.Colour.orange())
+      await context.send(embed=embed)
+      anser = str(soup.findAll('td')[n+1])[17:-5]
 
-    with open('answers.json', 'r') as f:
-      answers = json.load(f)
+      with open('answers.json', 'r') as f:
+        answers = json.load(f)
 
-    answers[str(context.guild.id)] = anser
+      answers[str(context.guild.id)] = anser
 
-    with open('answers.json', 'w') as f:
-      json.dump(answers, f, indent=2)
+      with open('answers.json', 'w') as f:
+        json.dump(answers, f, indent=2)
 
   await client.process_commands(message)
 
