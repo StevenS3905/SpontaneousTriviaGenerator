@@ -1,0 +1,9 @@
+/*
+Stores each registered user in the following format:
+{
+  "data" : "users",
+  "user id" : "score",
+  "user id" : "score",
+  "user id" : "score"
+}
+*/
