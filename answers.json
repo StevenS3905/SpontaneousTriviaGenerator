@@ -1,0 +1,8 @@
+'''
+Stores the answers for each server in a dictionary with the following format
+{
+server id : "answer"
+server id2 : "answer2"
+server id3 : "answer3"
+}
+'''
