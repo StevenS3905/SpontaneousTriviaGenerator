@@ -25,7 +25,7 @@ async def help(context):
   embed.add_field(name="**changecategory (category/categories)**", value="Limits trivia questions to the following category or categories. Category options are: arts & lit, geography, entertainment, history, science & nature, misc, or all", inline=False)
   embed.add_field(name="**question (category/categories)**", value="Returns a trivia question. Category or categories can be of any of the above listed or blank for random", inline=False)
   embed.add_field(name="**ans (answer)**", value="Answers previous question with argument", inline=False)
-  embed.add_field(name="**rightanswer**", value="Returns the correct answer to the previous question", inline=False)
+  embed.add_field(name="**rightans**", value="Returns the correct answer to the previous question", inline=False)
   embed.add_field(name="**myscore**", value="Returns author's score", inline=False)
   embed.add_field(name="**serverscores**", value="Returns the scores for all server members", inline=False)
   embed.add_field(name="**credits**", value="Returns who I owe this bot's existence to :)", inline=False)
@@ -316,7 +316,7 @@ async def ans(context, *message):
       await context.send("Sorry, that's incorrect")
 
 @client.command()
-async def rightanswer(context):
+async def rightans(context):
   with open('answers.json', 'r') as f:
     answers = json.load(f)
 
