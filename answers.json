@@ -1,3 +1,9 @@
 /*
-print('hi')
+Stores the answer to the previous question for each server in the following format:
+{
+  "data" : "answers",
+  server id : "answer",
+  server id : "answer",
+  server id : "answer"
+}
 */
