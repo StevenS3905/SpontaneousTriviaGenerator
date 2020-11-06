@@ -1,12 +1,13 @@
 import discord, random, keep_alive, json, collections
 from discord.ext import commands
+from discord.utils import find
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 url = "http://old.randomtriviagenerator.com/"
 
 def get_prefix(client, message):
-  with open('prefixes.json', 'r') as f:
+  with open("prefixes.json", "r") as f:
     prefixes = json.load(f)
 
   return prefixes[str(message.guild.id)]
@@ -34,19 +35,19 @@ async def help(context):
 
 @client.event
 async def on_guild_join(guild):
-  with open('prefixes.json', 'r') as f:
+  with open("prefixes.json", "r") as f:
     prefixes = json.load(f)
 
-  with open('answers.json', 'r') as f:
+  with open("answers.json", "r") as f:
     answers = json.load(f)
 
-  with open('frequencies.json', 'r') as f:
+  with open("frequenc.json", "r") as f:
     frequencies = json.load(f)
   
-  with open('servers.json', 'r') as f:
+  with open("servers.json", "r") as f:
     servers = json.load(f)
 
-  with open('categories.json', 'r') as f:
+  with open("categories.json", "r") as f:
     categories = json.load(f)
   
   prefixes[str(guild.id)] = '$'
@@ -55,36 +56,41 @@ async def on_guild_join(guild):
   categories[str(guild.id)] = [4, 7, 10, 13, 16, 19]
   servers[str(guild.id)] = {}
 
-  with open('prefixes.json', 'w') as f:
+  with open("prefixes.json", "w") as f:
     json.dump(prefixes, f, indent=2)
 
-  with open('answers.json', 'w') as f:
+  with open("answers.json", "w") as f:
     json.dump(answers, f, indent=2)
 
-  with open('frequencies.json', 'w') as f:
+  with open("frequenc.json", "w") as f:
     json.dump(frequencies, f, indent=2)
 
-  with open('servers.json', 'w') as f:
+  with open("servers.json", "w") as f:
     json.dump(servers, f, indent=2)
 
-  with open('categories.json', 'w') as f:
+  with open("categories.json", "w") as f:
     json.dump(categories, f, indent=2)
+
+  general = find(lambda x: x.name == "general",  guild.text_channels)
+  if general and general.permissions_for(guild.me).send_messages:
+    embed=discord.Embed(title="**Hello!**", description="Thank you for inviting me to your server! I'm still in my developmental stages so if you find any bugs, have any suggestions, or would like some help, please join my support server. Any input would be greatly appreciated. https://discord.gg/cBNQpV6rwh", color=discord.Colour.orange())
+    await general.send(embed=embed)
 
 @client.event
 async def on_guild_remove(guild):
-  with open('prefixes.json', 'r') as f:
+  with open("prefixes.json", "r") as f:
     prefixes = json.load(f)
 
-  with open('answers.json', 'r') as f:
+  with open("answers.json", "r") as f:
     answers = json.load(f)
 
-  with open('frequencies.json', 'r') as f:
+  with open("frequenc.json", "r") as f:
     frequencies = json.load(f)
 
-  with open('servers.json', 'r') as f:
+  with open("servers.json", "r") as f:
     servers = json.load(f)
 
-  with open('categories.json', 'r') as f:
+  with open("categories.json", "r") as f:
     categories = json.load(f)
 
   prefixes.pop(str(guild.id))
@@ -93,19 +99,19 @@ async def on_guild_remove(guild):
   servers.pop(str(guild.id))
   categories.pop(str(guild.id))
 
-  with open('prefixes.json', 'w') as f:
+  with open("prefixes.json", "w") as f:
     json.dump(prefixes, f, indent=2)
 
-  with open('answers.json', 'w') as f:
+  with open("answers.json", "w") as f:
     json.dump(answers, f, indent=2)
 
-  with open('frequencies.json', 'w') as f:
+  with open("frequenc.json", "w") as f:
     json.dump(frequencies, f, indent=2)
 
-  with open('servers.json', 'w') as f:
+  with open("servers.json", "w") as f:
     json.dump(servers, f, indent=2)
 
-  with open('categories.json', 'w') as f:
+  with open("categories.json", "w") as f:
     json.dump(categories, f, indent=2)
 
 @client.event
@@ -122,19 +128,19 @@ async def ping(context):
 
 @client.command()
 async def changeprefix(context, prefix):
-  with open('prefixes.json', 'r') as f:
+  with open("prefixes.json", "r") as f:
     prefixes = json.load(f)
 
   prefixes[str(context.guild.id)] = prefix
 
-  with open('prefixes.json', 'w') as f:
+  with open("prefixes.json", "w") as f:
     json.dump(prefixes, f, indent=2)
 
   await context.send("Prefix is now " + prefix)
 
 @client.command()
 async def freq(context):
-  with open('frequencies.json', 'r') as f:
+  with open("frequenc.json", "r") as f:
     frequencies = json.load(f)
 
   await context.send(frequencies[str(context.guild.id)])
@@ -143,12 +149,12 @@ async def freq(context):
 async def changefreq(context, arg):
   try:
     if 0<=float(arg)<=1:
-      with open('frequencies.json', 'r') as f:
+      with open("frequenc.json", "r") as f:
         frequencies = json.load(f)
 
       frequencies[str(context.guild.id)] = float(arg)
 
-      with open('frequencies.json', 'w') as f:
+      with open("frequenc.json", "w") as f:
         json.dump(frequencies, f, indent=2)
 
       await context.send("frequency is now " + arg)
@@ -167,7 +173,7 @@ async def testconnect(context):
 
 @client.command()
 async def category(context):
-  with open('categories.json', 'r') as f:
+  with open("categories.json", "r") as f:
     categories = json.load(f)
 
   category = categories[str(context.guild.id)]
@@ -175,47 +181,47 @@ async def category(context):
     string = "your categories are: "
     for i in category:
       if i == 4:
-        string = string + 'arts & lit, '
+        string = string + "arts & lit, "
       if i == 7:
-        string = string + 'geography, '
+        string = string + "geography, "
       if i == 10:
-        string = string + 'entertainment, '
+        string = string + "entertainment, "
       if i == 13:
-        string = string + 'history, '
+        string = string + "history, "
       if i == 16:
-        string = string + 'science & nature, '
+        string = string + "science & nature, "
       if i == 19:
-        string = string + 'miscellaneous, '
+        string = string + "miscellaneous, "
     await context.send(string[:-2])
   else:
     await context.send("Questions can be of any category!")
 
 @client.command()
 async def changecategory(context, *category):
-  with open('categories.json', 'r') as f:
+  with open("categories.json", "r") as f:
     categories = json.load(f)
 
   l = []
-  category = ''.join(category).lower()
+  category = "".join(category).lower()
   string = "your new categories are: "
-  if 'arts' in category or 'lit' in category:
+  if "arts" in category or "lit" in category:
     l.append(4)
-    string = string + 'arts & lit, '    
-  if 'geo' in category:
+    string = string + "arts & lit, "    
+  if "geo" in category:
     l.append(7)
-    string = string + 'geography, '
-  if 'ent' in category:
+    string = string + "geography, "
+  if "ent" in category:
     l.append(10)
-    string = string + 'entertainment, '
-  if 'hist' in category:
+    string = string + "entertainment, "
+  if "hist" in category:
     l.append(13)
-    string = string + 'history, '
-  if 'sci' in category or 'nat' in category:
+    string = string + "history, "
+  if "sci" in category or "nat" in category:
     l.append(16)
-    string = string + 'science & nature, '
-  if 'misc' in category:
+    string = string + "science & nature, "
+  if "misc" in category:
     l.append(19)
-    string = string + 'miscellaneous, '
+    string = string + "miscellaneous, "
 
   if len(l) == 0:
     l = [4,7,10,13,16,19]
@@ -225,7 +231,7 @@ async def changecategory(context, *category):
 
   categories[str(context.guild.id)] = l
 
-  with open('categories.json', 'w') as f:
+  with open("categories.json", "w") as f:
     json.dump(categories, f, indent=2)
 
 @client.command()
@@ -235,42 +241,42 @@ async def question(context, *category):
   except:
     print("Error opening the URL")
 
-  soup = BeautifulSoup(page, 'html.parser')
+  soup = BeautifulSoup(page, "html.parser")
 
   l = []
-  category = ''.join(category).lower()
-  if 'arts' in category or 'lit' in category:
+  category = "".join(category).lower()
+  if "arts" in category or "lit" in category:
     l.append(4)
-  if 'geo' in category:
+  if "geo" in category:
     l.append(7)
-  if 'ent' in category:
+  if "ent" in category:
     l.append(10)
-  if 'hist' in category:
+  if "hist" in category:
     l.append(13)
-  if 'sci' in category or 'nat' in category:
+  if "sci" in category or "nat" in category:
     l.append(16)
-  if 'misc' in category:
+  if "misc" in category:
     l.append(19)
 
   if len(l) == 0:
-    with open('categories.json', 'r') as f:
+    with open("categories.json", "r") as f:
       categories = json.load(f)
     l=categories[str(context.guild.id)]
   
   n=random.choice(l)
 
-  string = str(soup.findAll('td')[n])
+  string = str(soup.findAll("td")[n])
   string = string[string.index('>', 17)+1:-9]
   embed=discord.Embed(title="**Question**", description=string, color=discord.Colour.orange())
   await context.send(embed=embed)
-  anser = str(soup.findAll('td')[n+1])[17:-5]
+  anser = str(soup.findAll("td")[n+1])[17:-5]
 
-  with open('answers.json', 'r') as f:
+  with open("answers.json", "r") as f:
     answers = json.load(f)
 
   answers[str(context.guild.id)] = anser
 
-  with open('answers.json', 'w') as f:
+  with open("answers.json", "w") as f:
     json.dump(answers, f, indent=2)
 
 @client.command()
@@ -278,7 +284,7 @@ async def ans(context, *message):
   message = " ".join(message[:])
   message = message.lower()
 
-  with open('answers.json', 'r') as f:
+  with open("answers.json", "r") as f:
     answers = json.load(f)
 
   temp = answers[str(context.guild.id)].lower()
@@ -286,14 +292,14 @@ async def ans(context, *message):
   if message==temp:                
     answers[str(context.guild.id)] = None
 
-    with open('answers.json', 'w') as f:
+    with open("answers.json", "w") as f:
       json.dump(answers, f, indent=2)
     
 
-    with open('users.json', 'r') as f:
+    with open("users.json", "r") as f:
       users = json.load(f)
 
-    with open('servers.json', 'r') as f:
+    with open("servers.json", "r") as f:
       servers = json.load(f)
 
     if str(context.author.id) in users.keys():
@@ -304,10 +310,10 @@ async def ans(context, *message):
     if str(context.author.id) not in servers[str(context.guild.id)]:
       servers[str(context.guild.id)].append(str(context.author.id))
 
-    with open('servers.json', 'w') as f:
+    with open("servers.json", "w") as f:
       json.dump(servers, f, indent=2)
 
-    with open('users.json', 'w') as f:
+    with open("users.json", "w") as f:
       json.dump(users, f, indent=2)
 
     await context.send(f"That's right! Your score is now {users[str(context.author.id)]}")
@@ -317,7 +323,7 @@ async def ans(context, *message):
 
 @client.command()
 async def rightans(context):
-  with open('answers.json', 'r') as f:
+  with open("answers.json", "r") as f:
     answers = json.load(f)
 
   anser = answers[str(context.guild.id)]
@@ -327,17 +333,17 @@ async def rightans(context):
         
     answers[str(context.guild.id)] = None
 
-    with open('answers.json', 'w') as f:
+    with open("answers.json", "w") as f:
       json.dump(answers, f, indent=2)
   else:
     await context.send("No question has been asked.")
 
 @client.command()
 async def myscore(context):
-  with open('servers.json', 'r') as f:
+  with open("servers.json", "r") as f:
     servers = json.load(f)
 
-  with open('users.json', 'r') as f:
+  with open("users.json", "r") as f:
     users = json.load(f)
 
   if str(context.author.id) in users.keys():
@@ -349,18 +355,18 @@ async def myscore(context):
   if str(context.author.id) not in servers[str(context.guild.id)]:
     servers[str(context.guild.id)].append(str(context.author.id))
   
-  with open('users.json', 'w') as f:
+  with open("users.json", "w") as f:
     json.dump(users, f, indent=2)
 
-  with open('servers.json', 'w') as f:
+  with open("servers.json", "w") as f:
     json.dump(servers, f, indent=2)
 
 @client.command()
 async def serverscores(context):
-  with open('servers.json', 'r') as f:
+  with open("servers.json", "r") as f:
     servers = json.load(f)
   
-  with open('users.json', 'r') as f:
+  with open("users.json", "r") as f:
     users = json.load(f)
 
   if(str(context.author.id) not in users.keys()):
@@ -369,10 +375,10 @@ async def serverscores(context):
   if str(context.author.id) not in servers[str(context.guild.id)]:
     servers[str(context.guild.id)].append(str(context.author.id))
 
-  with open('users.json', 'w') as f:
+  with open("users.json", "w") as f:
     json.dump(users, f, indent=2)
 
-  with open('servers.json', 'w') as f:
+  with open("servers.json", "w") as f:
     json.dump(servers, f, indent=2)
 
   embed=discord.Embed(title="**Top Server servers**", description=None, color=discord.Colour.orange())
@@ -405,10 +411,10 @@ async def serverscores(context):
 
 @client.command()
 async def globalscores(context):
-  with open('users.json', 'r') as f:
+  with open("users.json", "r") as f:
     users = json.load(f)
 
-  with open('servers.json', 'r') as f:
+  with open("servers.json", "r") as f:
     servers = json.load(f)
 
   if str(context.author.id) not in users.keys():
@@ -417,10 +423,10 @@ async def globalscores(context):
   if str(context.author.id) not in servers[str(context.guild.id)]:
     servers[str(context.guild.id)].append(str(context.author.id))
 
-  with open('users.json', 'w') as f:
+  with open("users.json", "w") as f:
     json.dump(users, f, indent=2)
 
-  with open('servers.json', 'w') as f:
+  with open("servers.json", "w") as f:
     json.dump(servers, f, indent=2)
   
   embed=discord.Embed(title="**Top Global servers**", description=None, color=discord.Colour.orange())
@@ -468,13 +474,13 @@ async def credits(context):
 async def on_message(message):
   context = await client.get_context(message)
 
-  with open('prefixes.json', 'r') as f:
+  with open("prefixes.json", "r") as f:
     prefixes = json.load(f)
 
   if context.guild.id in prefixes.keys():
     prefix = prefixes[str(context.guild.id)]
         
-    with open('frequencies.json', 'r') as f:
+    with open("frequenc.json", "r") as f:
       frequencies = json.load(f)
 
     freq = frequencies[str(context.guild.id)]
@@ -485,27 +491,27 @@ async def on_message(message):
       except:
         print("Error opening the URL")
 
-      soup = BeautifulSoup(page, 'html.parser')
+      soup = BeautifulSoup(page, "html.parser")
               
-      with open('categories.json', 'r') as f:
+      with open("categories.json", "r") as f:
         categories = json.load(f)
 
       n=random.choice(categories[str(context.guild.id)])
-      string = str(soup.findAll('td')[n])
+      string = str(soup.findAll("td")[n])
       string = string[string.index('>', 17)+1:-9]
       embed=discord.Embed(title="**Question**", description=string, color=discord.Colour.orange())
       await context.send(embed=embed)
-      anser = str(soup.findAll('td')[n+1])[17:-5]
+      anser = str(soup.findAll("td")[n+1])[17:-5]
 
-      with open('answers.json', 'r') as f:
+      with open("answers.json", "r") as f:
         answers = json.load(f)
 
       answers[str(context.guild.id)] = anser
 
-      with open('answers.json', 'w') as f:
+      with open("answers.json", "w") as f:
         json.dump(answers, f, indent=2)
 
   await client.process_commands(message)
 
 keep_alive.keep_alive()
-client.run('''token''')
+client.run("Njk3MjQyNTIzMzI3OTIyMTg2.Xo0bsw.iAFkWCwTIXqZYqa41UslKiG1sY0")
