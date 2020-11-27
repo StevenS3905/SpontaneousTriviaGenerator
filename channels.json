@@ -1,5 +1,5 @@
 /*
-Stores the channel in each server to which questions are directed
+Stores the channel in each server to which questions are directed in the following format:
 {
   "data" : "answers",
   "server id" : "channel",
