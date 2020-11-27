@@ -1,0 +1,9 @@
+/*
+Stores the channel in each server to which questions are directed
+{
+  "data" : "answers",
+  "server id" : "channel",
+  "server id" : "channel",
+  "server id" : "channel"
+}
+*/
