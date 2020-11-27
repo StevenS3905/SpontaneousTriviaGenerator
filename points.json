@@ -1,0 +1,9 @@
+/*
+Stores the points that will be received by correctly answering the previous question for each server in the following format:
+{
+  "data" : "points",
+  "server id" : "point value",
+  "server id" : "point value",
+  "server id" : "point value"
+}
+*/
