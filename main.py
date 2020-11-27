@@ -34,6 +34,7 @@ async def help(context):
   embed.add_field(name="**serverscores**", value="Returns the scores for all server members", inline=False)
   embed.add_field(name="**credits**", value="Returns who I owe this bot's existence to :)", inline=False)
   embed.add_field(name="**Github: https://github.com/StevenS3905/SpontaneousTriviaGenerator.git**", value="\u200b", inline=False)
+  embed.add_field(name="\u200b", value="If you like what I'm doing, please leave a good on rating for me at https://top.gg/bot/697242523327922186", inline=False)
   await context.send(embed=embed)
 
 @client.event
@@ -704,7 +705,6 @@ async def on_message(message):
             context = i
             changed = True
             break
-        print(context.guild.get_channel.name)
         if changed == False:
           for i in context.guild.text_channels:
             if i.permissions_for(i.guild.me).send_messages and i.permissions_for(i.guild.me).read_messages:
@@ -712,7 +712,6 @@ async def on_message(message):
               context = i
               changed = True
               break
-          print(context.guild.get_channel.name)
           if changed == False and channels[str(context.guild.id)] !="inactive":
             owner = await client.fetch_user(context.guild.owner_id)
             await owner.send("Hi there! It seems I'm not able to send and read messages in any of "+context.guild.name+"'s channels. Please change this or I won't be able to share trivia with your server :)")
