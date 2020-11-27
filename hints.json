@@ -1,0 +1,9 @@
+/*
+Stores the current hint to the previous question for each server in the following format:
+{
+  "data" : "hints",
+  "server id" : "hint",
+  "server id" : "hint",
+  "server id" : "hint"
+}
+*/
