@@ -3,17 +3,19 @@ from discord.ext import commands
 from discord.utils import find
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+intents = discord.Intents.default()
+intents.members = True
 
 url = "http://old.randomtriviagenerator.com/"
 
 def get_prefix(client, message):
   with open("prefixes.json", "r") as f:
     prefixes = json.load(f)
+  if prefixes[str(message.guild.id)]:
+    return prefixes[str(message.guild.id)]
+  return "$"
 
-  return prefixes[str(message.guild.id)]
-
-client = commands.Bot(command_prefix = get_prefix, help_command = None)
-errorclient = discord.Client()
+client = commands.Bot(command_prefix = get_prefix, help_command = None, intents = intents)
 
 @client.command()
 async def help(context):
@@ -31,7 +33,9 @@ async def help(context):
   embed.add_field(name="**ans (answer)**", value="Answers previous question with given answer", inline=False)
   embed.add_field(name="**rightans**", value="Returns the correct answer to the previous question", inline=False)
   embed.add_field(name="**myscore**", value="Returns author's score", inline=False)
-  embed.add_field(name="**serverscores**", value="Returns the scores for all server members", inline=False)
+  embed.add_field(name="**serverscores**", value="Returns the top scores for all server members", inline=False)
+  embed.add_field(name="**globalscores**", value="Returns the top scores for all users", inline=False)
+  embed.add_field(name="**p(smartping)**", value="Allows the use of the 'and', 'not', 'except' logic operators as well as parentheses when pinging users. 'not' will ping users who don't apply to the description following it e.g. 'not user1' will ping all users except user 1 and 'not role1' will ping all users not in role 1. 'and' will ping the overlap of users on either side of the statement e.g. 'role1 and role2' will ping users in both role1 and role 2. 'except' will nullify any other pings for the role or member following. Operators are interpreted in the order 'except, not, and'. Elements should be separated by spaces. users and roles not associated with an operator are simply pinged.You can combine these statements with parentheses to ping any combination of users in your server. You can identify users and roles by their names, nicknames, and ids :)", inline=False)
   embed.add_field(name="**credits**", value="Returns who I owe this bot's existence to :)", inline=False)
   embed.add_field(name="**Github: https://github.com/StevenS3905/SpontaneousTriviaGenerator.git**", value="\u200b", inline=False)
   embed.add_field(name="\u200b", value="If you like what I'm doing, please leave a good on rating for me at https://top.gg/bot/697242523327922186", inline=False)
@@ -166,6 +170,83 @@ async def on_command_error(context, error):
 
 @client.event
 async def on_ready():
+  with open("prefixes.json", "r") as f:
+    prefixes = json.load(f)
+
+  with open("answers.json", "r") as f:
+    answers = json.load(f)
+
+  with open("frequencies.json", "r") as f:
+    frequencies = json.load(f)
+
+  with open("servers.json", "r") as f:
+    servers = json.load(f)
+
+  with open("categories.json", "r") as f:
+    categories = json.load(f)
+
+  with open("hints.json", "r") as f:
+    hints = json.load(f)
+
+  with open("points.json", "r") as f:
+    points = json.load(f)
+    
+  with open("channels.json", "r") as f:
+    channels = json.load(f)
+    
+  with open("users.json", "r") as f:
+    users = json.load(f)
+
+  for guild in client.guilds:
+    if str(guild.id) not in prefixes.keys():
+      prefixes[str(guild.id)] = "$"
+    if str(guild.id) not in answers.keys():
+      answers[str(guild.id)] = None
+    if str(guild.id) not in frequencies.keys():
+      frequencies[str(guild.id)] = .04
+    if str(guild.id) not in categories.keys():
+      categories[str(guild.id)] = [4,7,10,13,16,19]
+    if str(guild.id) not in hints.keys():
+      hints[str(guild.id)] = None
+    if str(guild.id) not in points.keys():
+      points[str(guild.id)] = 5
+    if str(guild.id) not in channels.keys():
+      channels[str(guild.id)] = None
+
+    l=[]
+    for member in guild.members:
+      if str(member.id) not in users.keys():
+        users[str(member.id)] = 0
+      l.append(str(member.id))
+    servers[str(guild.id)] = l
+    
+  with open("prefixes.json", "w") as f:
+    json.dump(prefixes, f, indent=2)
+
+  with open("answers.json", "w") as f:
+    json.dump(answers, f, indent=2)
+
+  with open("frequencies.json", "w") as f:
+    json.dump(frequencies, f, indent=2)
+
+  with open("servers.json", "w") as f:
+    json.dump(servers, f, indent=2)
+
+  with open("categories.json", "w") as f:
+    json.dump(categories, f, indent=2)
+
+  with open("hints.json", "w") as f:
+    json.dump(hints, f, indent=2)
+
+  with open("points.json", "w") as f:
+    json.dump(points, f, indent=2)
+    
+  with open("channels.json", "w") as f:
+    json.dump(channels, f, indent=2)
+    
+  with open("users.json", "w") as f:
+    json.dump(users, f, indent=2)
+
   print("Bot is ready.")
 
 @client.command()
@@ -189,7 +270,7 @@ async def freq(context):
   with open("frequencies.json", "r") as f:
     frequencies = json.load(f)
 
-  await context.send(frequencies[str(context.guild.id)])
+  await context.send("Your server's frequency is " + str(frequencies[str(context.guild.id)]))
 
 @client.command()
 async def changefreq(context, arg):
@@ -210,8 +291,8 @@ async def changefreq(context, arg):
     await context.send("Incompatible frequency")
 
 @client.command()
-async def direct(context, id):
-  channel = context.guild.get_channel(int(id[2:-1]))
+async def direct(context, message):
+  channel = context.guild.get_channel(int(message[2:-1]))
   if channel == None:
     await context.send("Specificied channel could not be found")
   elif channel.permissions_for(context.guild.me).send_messages and channel.permissions_for(context.guild.me).read_messages:
@@ -219,12 +300,12 @@ async def direct(context, id):
     with open("channels.json", "r") as f:
       channels = json.load(f)
 
-    channels[str(context.guild.id)] = int(id[2:-1])
+    channels[str(context.guild.id)] = int(message[2:-1])
 
     with open("channels.json", "w") as f:
       json.dump(channels, f, indent=2)
 
-    await context.send("Future spontaneous trivia questions will be sent to "+id)
+    await context.send("Future spontaneous trivia questions will be sent to "+message)
   else:
     await context.send("I am not permitted to send and receive messages in this channel")
 
@@ -358,15 +439,7 @@ async def question(context, *category):
 
   with open("hints.json", "w") as f:
     json.dump(hints, f, indent=2)
-
-  with open("data.json", "r") as f:
-    data = json.load(f)
-
-  data["5questions"] = data["5questions"] + 1
-
-  with open("data.json", "w") as f:
-    json.dump(data, f, indent=2)
-
+    
 @client.command()
 async def hint(context, n=1):
   with open("points.json", "r") as f:
@@ -425,14 +498,6 @@ async def hint(context, n=1):
     for i in range(len(s)):
       s = s[:i*2] + " " + s[i*2:]
     await context.send("The answer looks like: " + s.replace("_", "\_"))
-    
-    with open("data.json", "r") as f:
-      data = json.load(f)
-
-    data[str(points[str(context.guild.id)])+"questions"] = data[str(points[str(context.guild.id)])+"questions"] + 1
-
-    with open("data.json", "w") as f:
-      json.dump(data, f, indent=2)
 
     with open("hints.json", "w") as f:
       json.dump(hints, f, indent=2)
@@ -474,14 +539,6 @@ async def ans(context, *message):
       if str(context.author.id) not in servers[str(context.guild.id)]:
         servers[str(context.guild.id)].append(str(context.author.id))
 
-      with open("data.json", "r") as f:
-        data = json.load(f)
-
-      data[str(points[str(context.guild.id)])] = data[str(points[str(context.guild.id)])] + 1
-
-      with open("data.json", "w") as f:
-        json.dump(data, f, indent=2)
-
       with open("servers.json", "w") as f:
         json.dump(servers, f, indent=2)
 
@@ -500,7 +557,7 @@ async def ans(context, *message):
 
       with open("hints.json", "w") as f:
         json.dump(hints, f, indent=2)
-
+        
       await context.send(f"That's right! Your score is now {users[str(context.author.id)]}")
     else:
         await context.send("Sorry, that's incorrect")
@@ -586,7 +643,7 @@ async def serverscores(context):
   with open("servers.json", "w") as f:
     json.dump(servers, f, indent=2)
 
-  embed=discord.Embed(title="**Top Server servers**", description=None, color=discord.Colour.orange())
+  embed=discord.Embed(title="**Top Server Users**", description=None, color=discord.Colour.orange())
 
   l=collections.deque([servers[str(context.guild.id)][0]], maxlen=10)
   for i in servers[str(context.guild.id)][1:]:
@@ -636,7 +693,7 @@ async def globalscores(context):
   with open("servers.json", "w") as f:
     json.dump(servers, f, indent=2)
   
-  embed=discord.Embed(title="**Top Global servers**", description=None, color=discord.Colour.orange())
+  embed=discord.Embed(title="**Top Global Users**", description=None, color=discord.Colour.orange())
 
   l=collections.deque([], maxlen=10)
 
@@ -670,6 +727,147 @@ async def globalscores(context):
   await context.send(embed=embed)
 
 @client.command()
+async def p(context, *message):
+  global exceptions
+  exceptions = []
+  length = len(message)
+  message = list(message)
+  if "".join(message).count("(") != "".join(message).count(")"):
+    await context.send("Mismatched parentheses")
+    return
+    
+  def separate(i):
+    if "(" in message[i] or ")" in message[i]:
+      try:
+        n = message[i].index("(")
+      except:
+        n = message[i].index(")")
+      if len(message[i][n+1:]) != 0:
+        message.insert(i+1, message[i][n+1:])
+        separate(i+1)
+      message.insert(i+1, message[i][n])
+      if len(message[i][:n]) != 0:
+        message.insert(i+1, message[i][:n])
+        separate(i+1)
+      del message[i]
+    return len(message)
+
+  i=0
+  while i < length:
+    length = separate(i)
+    i=i+1
+      
+  def parenparse(arg):
+    elements = []
+    i=0
+    while i < len(arg):
+      if arg[i] == "(":
+        l = []
+        layers = 1
+        for j in arg[i+1:]:
+          if j == "(":
+            layers = layers + 1
+            l.append(j)
+          elif j == ")":
+            layers = layers - 1
+            if layers == 0:
+              elements.append(parenparse(l))
+              i=i+len(l)
+            else:
+              l.append(j)
+          else:
+            l.append(j)
+      elif arg[i] != ")":
+        elements.append(arg[i])
+      i=i+1
+    return elements
+  
+  elements = parenparse(message)
+
+  def evaluate(arg):
+    length = len(arg)
+    i=0
+    while i < length:
+      if type(arg[i]) == list:
+        if evaluate(arg[i]) == False:
+          return False
+        if len(arg[i]) == 1 and type(arg[i][0]) == list:
+          arg[i] = arg[i][0]
+      i=i+1
+    i=0
+    while i < length:
+      if arg[i] not in ("and", "or", "not", "except") and type(arg[i]) not in (list, discord.Member):
+        parsed = False
+        for role in context.guild.roles:
+          if str(role.id) == arg[i] or role.name.lower() == arg[i].lower():
+            l=[]
+            for member in context.guild.members:
+              if role in member.roles:
+                l.append(member)
+            arg[i] = l
+            parsed = True
+            break
+        if parsed == False:
+          for member in context.guild.members:
+            if str(member.id) == arg[i] or member.name.lower() == arg[i].lower() or member.name.lower()+"#"+member.discriminator == arg[i].lower() or member.display_name.lower() == arg[i].lower():
+              parsed = True
+              arg[i] = member
+              break
+        if parsed == False:
+          return False
+      i=i+1
+    i=0
+    while i < length:
+      if arg[i] == "except":
+        global exceptions
+        if type(arg[i+1]) == list:
+          exceptions = exceptions + arg[i+1]
+        else:
+          exceptions.append(arg[i+1])
+        del arg[i]
+        del arg[i]
+        length = len(arg)
+      i=i+1
+    i=0
+    while i < length:
+      if arg[i] == "not":
+        l = []
+        for member in context.guild.members:
+          if member not in arg[i+1]:
+            l.append(member)          
+        arg[i+1] = l    
+        del arg[i]
+      length = len(arg)
+      i=i+1
+    i=0
+    while i < length:
+      if arg[i] == "and":
+        l = []
+        for member in context.guild.members:
+          if (member == arg[i-1] or (type(arg[i-1]) == list and member in arg[i-1])) and (member == arg[i+1] or (type(arg[i+1]) == list and member in arg[i+1])):
+            l.append(member)
+        arg[i-1] = l    
+        del arg[i]
+        del arg[i]
+        length = len(arg)
+      else:
+        i=i+1
+    length = len(arg)
+          
+  if evaluate(elements) == False:
+    await context.send("One ore more of the previous elements could not be identified as either a server role or user")
+  else:
+    if len(elements) == 1 and type(elements[0]) == list:
+      elements = elements[0]
+    if len(exceptions) == 1 and type(exceptions[0]) == list:
+      exceptions = exceptions[0]
+    mentions = ""
+    for i in elements:
+      if i not in exceptions:
+        mentions = mentions + "<@" + str(i.id) + ">"
+    await context.send(content=mentions)
+  
+@client.command()
 async def credits(context):
   embed=discord.Embed(title="**Credits**", description=None, color=discord.Colour.orange())
   embed.add_field(name="**Trivia Source: **", value="old.randomtriviagenerator.com", inline=False)
@@ -701,14 +899,14 @@ async def on_message(message):
       elif context.channel.permissions_for(context.guild.me).send_messages == False or context.channel.permissions_for(context.guild.me).read_messages == False:
         for i in context.guild.text_channels:
           if "general" in i.name and i.permissions_for(i.guild.me).send_messages and i.permissions_for(i.guild.me).read_messages:
-            channels[str(context.guild.id)] = i
+            channels[str(context.guild.id)] = i.id
             context = i
             changed = True
             break
         if changed == False:
           for i in context.guild.text_channels:
             if i.permissions_for(i.guild.me).send_messages and i.permissions_for(i.guild.me).read_messages:
-              channels[str(context.guild.id)] = i
+              channels[str(context.guild.id)] = i.id
               context = i
               changed = True
               break
@@ -718,7 +916,7 @@ async def on_message(message):
             channels[str(context.guild.id)] = "inactive"
 
         with open("channels.json", "w") as f:
-          json.dump(channels, f, indent=2)
+           json.dump(channels, f, indent=2)
       try:
         page = urlopen(url)
       except:
@@ -760,14 +958,6 @@ async def on_message(message):
       with open("hints.json", "w") as f:
         json.dump(hints, f, indent=2)
 
-      with open("data.json", "r") as f:
-        data = json.load(f)
-
-      data["5questions"] = data["5questions"] + 1
-
-      with open("data.json", "w") as f:
-        json.dump(data, f, indent=2)
-
   await client.process_commands(message)
 
-client.run('''token''')
+client.run("""token""")
